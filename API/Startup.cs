@@ -28,9 +28,21 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            // Connect to database
             services.AddDbContext<DataContext>(opt =>
             {
                 opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+            });
+            // Add cors-header
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy("CorsPolicy", policy =>
+                {
+                    // Allow all from forntend (in this case loalhost:3000)
+                    policy.AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .WithOrigins("http://localhost:3000");
+                });
             });
         }
 
@@ -47,6 +59,9 @@ namespace API
             app.UseRouting();
 
             app.UseAuthorization();
+
+            // Modify response via created service
+            app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {
