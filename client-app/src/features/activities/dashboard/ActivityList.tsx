@@ -12,7 +12,7 @@ const ActivityList: React.FC<ActivityListProps> = ({ activities, selectActivity,
         <Segment clearing>
             <Item.Group divided>
                 {activities.map(activity =>
-                    <Item>
+                    <Item key={activity.id}>
                         <Item.Content>
                             <Item.Header as='a'>{activity.title}</Item.Header>
                             <Item.Meta>{activity.date}</Item.Meta>
