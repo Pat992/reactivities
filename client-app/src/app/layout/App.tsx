@@ -1,12 +1,15 @@
-import React, { SyntheticEvent, useEffect, useState } from 'react';
+import React, { SyntheticEvent, useContext, useEffect, useState } from 'react';
 import { Container } from 'semantic-ui-react';
 import { IActivity } from '../models/activity';
 import Navbar from '../../features/nav/Navbar';
 import ActivityDashboard from '../../features/activities/dashboard/ActivityDashboard';
 import agent from '../api/agent';
 import LoadingComponent from './LoadingComponent';
+import ActivityStore from '../stores/activityStore';
+import { observer } from 'mobx-react-lite';
 
 const App: React.FC = () => {
+  const activityStore = useContext(ActivityStore);
   const [activities, setActivites] = useState<IActivity[]>([])
   const [selectedActivity, setSelectedActivity] = useState<IActivity | null>(null)
   const [editMode, setEditMode] = useState<boolean>(false)
@@ -15,17 +18,10 @@ const App: React.FC = () => {
   const [target, setTarget] = useState('')
 
   useEffect(() => {
-    agent.Activities.list().then(res => {
-      let activities: IActivity[] = []
-      res.forEach((activity) => {
-        activity.date = activity.date.split('.')[0]
-        activities.push(activity)
-      })
-      setActivites(activities)
-    }).then(() => setLoading(false))
+    activityStore.loadActivities();
   }, [])
 
-  if (loading) return <LoadingComponent content="Loading activities..." />
+  if (activityStore.loadingInitial) return <LoadingComponent content="Loading activities..." />
 
   const handleSelectActivity = (id: string) => {
     setSelectedActivity(activities.filter(a => a.id === id)[0])
@@ -68,10 +64,8 @@ const App: React.FC = () => {
       <Navbar openCreateFrom={handleOpenCreateForm} />
       <Container style={{ marginTop: "7em" }}>
         <ActivityDashboard
-          activities={activities}
+          activities={activityStore.activities}
           selectActivity={handleSelectActivity}
-          selectedActivity={selectedActivity!}
-          editMode={editMode}
           setEditMode={setEditMode}
           setSelectedActivity={setSelectedActivity}
           createActivity={handleCreateActivity}
@@ -85,4 +79,4 @@ const App: React.FC = () => {
   )
 }
 
-export default App;
+export default observer(App);
