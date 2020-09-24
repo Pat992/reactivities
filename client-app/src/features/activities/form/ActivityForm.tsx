@@ -5,11 +5,12 @@ import { IActivity } from '../../../app/models/activity'
 
 interface ActivityFormProps {
     selectedActivity: IActivity,
+    submitting: boolean,
     setEditMode: (editMode: boolean) => void,
     createActivity: (activity: IActivity) => void,
     editActivity: (activity: IActivity) => void
 }
-const ActivityForm: React.FC<ActivityFormProps> = ({ setEditMode, selectedActivity, createActivity, editActivity }) => {
+const ActivityForm: React.FC<ActivityFormProps> = ({ setEditMode, selectedActivity, createActivity, editActivity, submitting }) => {
     const initForm = () => {
         if (selectedActivity) {
             return selectedActivity
@@ -55,7 +56,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ setEditMode, selectedActivi
                 <Form.Input type="datetime-local" placeholder="Date" value={activity.date} name="date" onChange={handleInputChange} />
                 <Form.Input placeholder="City" value={activity.city} name="city" onChange={handleInputChange} />
                 <Form.Input placeholder="Venue" value={activity.venue} name="venue" onChange={handleInputChange} />
-                <Button floated="right" positive type="submit" content="Submit" name="title" />
+                <Button loading={submitting} floated="right" positive type="submit" content="Submit" name="title" />
                 <Button floated="right" content="Cancel" onClick={() => setEditMode(false)} />
             </Form>
         </Segment>
